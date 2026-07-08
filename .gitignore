@@ -1,0 +1,19 @@
+# Build artifacts
+tools/**/bin/
+tools/**/obj/
+
+# Game / mod binary assets — NOT redistributed here (third-party + game-derived IP).
+# The scripts/tools are ours; the cooked assets are not.
+dist/
+work/
+*.pak
+*.ucas
+*.utoc
+*.sig
+*.uasset
+*.uexp
+*.ubulk
+*.usmap
+*.zip
+scriptobjects.bin
+oodle-data-shared.dll
