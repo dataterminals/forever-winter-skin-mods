@@ -35,16 +35,20 @@ To retarget a mod onto a DLC slot you make its mesh **become** that slot's mesh 
      is a self-contained zip. Voice is character-wide — it plays on any Shaman skin once installed.
 3. `retoc to-zen` → a fresh `.utoc/.ucas/.pak` mod for that slot.
 
-### ⚠ Gotcha 1 — extract the mesh with game context, or it T-poses
+### ⚠ Gotcha 1 — extract with game context, or external refs break
 
 `retoc to-legacy` writes each external reference by resolving its package name from the mounted
-containers. If you extract the mod **in isolation** (mod + `global` only), base-game references
-it can't see — critically the mesh's **Skeleton** (`GenericHumanoid_Skeleton_MainCharacters`) —
-get written as a null placeholder. The mesh still *renders* (skinning uses the mesh's embedded
-bind pose) but the AnimBlueprint has no skeleton to bind to, so it **T-poses in-game**. Extract
-the mesh with the **whole game mounted** so the Skeleton import resolves. Verify with
-`fwrepath props <mesh> Skeleton` — it must say `GenericHumanoid_Skeleton_MainCharacters`, not
-`UnknownExport`. (Materials/textures/voice survive isolation fine; only the mesh needs context.)
+containers. Extract the mod **in isolation** (mod + `global` only) and any base-game reference it
+can't see gets written as a null placeholder (`UnknownExport`). Two that bite:
+- the mesh's **Skeleton** → the mesh still *renders* (skinning uses its embedded bind pose) but the
+  AnimBlueprint has nothing to bind to, so it **T-poses in-game**.
+- material-instance **Parent** (e.g. `M_UMP9_*` → `M_FW_Char`) → materials fall back to default,
+  **breaking the look**.
+
+Fix: extract with the **whole game mounted** (`retoc -a <AES> to-legacy <Content/Paks> …`) so those
+imports resolve. Verify with `fwrepath props`:
+`props <mesh> Skeleton` → a real `GenericHumanoid_Skeleton*`; `props <material> Parent` → a real
+material — never `UnknownExport`. (Plain textures/voice have no outgoing refs and survive isolation.)
 
 ### ⚠ Gotcha 2 — The FolderName / FPackageId gotcha
 
@@ -70,10 +74,15 @@ bash tools/build_shaman_dlc_variants.sh
 ## Layout
 
 ```
-tools/fwrepath/                 UAssetAPI console tool: inspect / rename exports + FolderName
-tools/build_shaman_dlc_variants.sh   build all 4 Shaman DLC-slot variants
+tools/fwrepath/                 UAssetAPI console tool: inspect / props / rename exports + FolderName
+tools/build_dlc_variants.sh     character-agnostic builder (env-driven: CHAR_DIR/BASE_MESH/VARIANTS/…)
+tools/build_shaman_dlc_variants.sh   the original Shaman-specific script (superseded by the general one)
 docs/shaman-skin-map.md         DT_SkinUIData: Shaman default + DLC slots -> mesh paths
+docs/scavgirl-skin-map.md       DT_SkinUIData: Scav Girl default + DLC slots -> mesh paths
 ```
+
+Built so far: **Shaman ← UMP45** (4 DLC slots) and **Scav Girl ← UMP9/Lenna** (4 DLC slots),
+each with the character's GFL voice bundled.
 
 ## Install (for the built mods)
 
