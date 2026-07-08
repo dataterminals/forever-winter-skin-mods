@@ -29,7 +29,9 @@ To retarget a mod onto a DLC slot you make its mesh **become** that slot's mesh 
      `SK_SCV_SHM_DSQ`, `SK_SCV_SHM_Doghead`)
    - **set the header `FolderName` to the new `/Game/…/Skins/<CODE>/<OBJ>` path** — see gotcha.
    - keep the mod's own materials/textures (they don't collide with base); reference the base
-     physics asset; ship no base mesh/portrait/voice, so the default Shaman stays 100% vanilla.
+     physics asset; ship no base mesh or portrait, so the default Shaman stays visually vanilla.
+   - bundle the mod's voice-line overrides unchanged (`INCLUDE_VOICE=1`, default) so each variant
+     is a self-contained zip. Voice is character-wide — it plays on any Shaman skin once installed.
 3. `retoc to-zen` → a fresh `.utoc/.ucas/.pak` mod for that slot.
 
 ### ⚠ The FolderName / FPackageId gotcha

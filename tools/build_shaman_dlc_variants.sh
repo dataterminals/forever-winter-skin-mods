@@ -48,6 +48,12 @@ for v in "${VARIANTS[@]}"; do
   done
   cp "$SRC/scriptobjects.bin" "$STAGE/scriptobjects.bin"
 
+  # voice lines (unchanged base-VO overrides) — bundled so each variant is a self-contained
+  # zip. Character-wide, so UMP45 voice plays on any Shaman skin once this variant is installed.
+  if [ "${INCLUDE_VOICE:-1}" = "1" ] && [ -d "$SRC/ForeverWinter/Content/Audio" ]; then
+    cp -r "$SRC/ForeverWinter/Content/Audio" "$STAGE/ForeverWinter/Content/"
+  fi
+
   # repath + rename the mesh onto the DLC slot (export name must match the DT object name)
   "$FWREPATH" rename "$SRC_SHM/SK_SCV_SHM.uasset" "$DST/Skins/$FOLDER/$OBJ.uasset" \
     "SK_SCV_SHM=$OBJ" \
