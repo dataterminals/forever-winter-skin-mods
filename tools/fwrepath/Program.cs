@@ -10,6 +10,8 @@
 using UAssetAPI;
 using UAssetAPI.UnrealTypes;
 using UAssetAPI.Unversioned;
+using UAssetAPI.ExportTypes;
+using UAssetAPI.PropertyTypes.Objects;
 
 static string FindUsmap()
 {
@@ -51,6 +53,36 @@ if (mode == "inspect")
     Console.WriteLine($"=== IMPORTS ({asset.Imports.Count}) ===");
     foreach (var im in asset.Imports)
         Console.WriteLine($"  '{im.ObjectName}'  class={im.ClassName}  pkg={im.ClassPackage}");
+    return 0;
+}
+
+if (mode == "props")
+{
+    var asset = Load(args[1], usmap);
+    string filt = args.Length > 2 ? args[2] : null;
+    string RefIdx(FPackageIndex idx)
+    {
+        if (idx == null || idx.Index == 0) return "null";
+        if (idx.Index < 0) return "IMP:" + asset.Imports[-idx.Index - 1].ObjectName;
+        return "EXP:" + asset.Exports[idx.Index - 1].ObjectName;
+    }
+    foreach (var e in asset.Exports)
+    {
+        if (e is not NormalExport ne) continue;
+        if (filt != null && !e.ObjectName.ToString().Contains(filt, StringComparison.OrdinalIgnoreCase)) continue;
+        Console.WriteLine($"== '{e.ObjectName}' [{ne.Data.Count} props]  outer={RefIdx(e.OuterIndex)} ==");
+        foreach (var p in ne.Data)
+        {
+            string val = p switch
+            {
+                ObjectPropertyData op => RefIdx(op.Value),
+                SoftObjectPropertyData sp => "soft:" + sp.Value.AssetPath.AssetName,
+                BoolPropertyData bp => bp.Value.ToString(),
+                _ => "…"
+            };
+            Console.WriteLine($"  {p.Name} <{p.PropertyType}> = {val}");
+        }
+    }
     return 0;
 }
 

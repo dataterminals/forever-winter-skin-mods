@@ -7,7 +7,12 @@
 # leaving the base Shaman (and its portrait/physics/voice) 100% vanilla.
 #
 # Requires: retoc (RETOC), fwrepath.exe (FWREPATH), a .usmap (FW_USMAP), and the loose
-# legacy assets produced by `retoc to-legacy <mod>+<global> <SRC>`.
+# legacy assets produced by `retoc to-legacy`.
+#
+# IMPORTANT: $SRC/…/SHAMAN/SK_SCV_SHM.uasset must be extracted with the FULL GAME mounted
+# (so the Skeleton import resolves), NOT the mod in isolation — otherwise every variant
+# renders but T-poses in-game. Confirm with:  fwrepath props <mesh> Skeleton  ->
+# must be GenericHumanoid_Skeleton_MainCharacters, not UnknownExport. (See README gotcha 1.)
 #
 # Env inputs:
 #   SRC       dir with unpacked legacy assets (…/ForeverWinter/Content/… + scriptobjects.bin)

@@ -21,8 +21,9 @@ A normal skin mod overrides the *default* mesh path, so a DLC skin (a different 
 
 To retarget a mod onto a DLC slot you make its mesh **become** that slot's mesh asset:
 
-1. `retoc to-legacy` the IoStore mod (with the game's `global.utoc` so ScriptObjects resolve)
-   → loose cooked `.uasset/.uexp`.
+1. `retoc to-legacy` the IoStore mod → loose cooked `.uasset/.uexp`. **The mesh must be
+   extracted with the full game mounted** (drop the mod into `Content/Paks` and run
+   `to-legacy` on the whole Paks folder with `-a <AES>`), not the mod in isolation — see gotcha 1.
 2. For each DLC slot, **repath + rename** the mesh so its package identity matches that slot:
    - move the file to `…/Shaman/Skins/<CODE>/<OBJ>.uasset`
    - rename the export FName `SK_SCV_SHM` → `<OBJ>` (must equal the DT object name, e.g.
@@ -34,7 +35,18 @@ To retarget a mod onto a DLC slot you make its mesh **become** that slot's mesh 
      is a self-contained zip. Voice is character-wide — it plays on any Shaman skin once installed.
 3. `retoc to-zen` → a fresh `.utoc/.ucas/.pak` mod for that slot.
 
-### ⚠ The FolderName / FPackageId gotcha
+### ⚠ Gotcha 1 — extract the mesh with game context, or it T-poses
+
+`retoc to-legacy` writes each external reference by resolving its package name from the mounted
+containers. If you extract the mod **in isolation** (mod + `global` only), base-game references
+it can't see — critically the mesh's **Skeleton** (`GenericHumanoid_Skeleton_MainCharacters`) —
+get written as a null placeholder. The mesh still *renders* (skinning uses the mesh's embedded
+bind pose) but the AnimBlueprint has no skeleton to bind to, so it **T-poses in-game**. Extract
+the mesh with the **whole game mounted** so the Skeleton import resolves. Verify with
+`fwrepath props <mesh> Skeleton` — it must say `GenericHumanoid_Skeleton_MainCharacters`, not
+`UnknownExport`. (Materials/textures/voice survive isolation fine; only the mesh needs context.)
+
+### ⚠ Gotcha 2 — The FolderName / FPackageId gotcha
 
 The game finds a package by its **FPackageId** (an IoStore chunk id), which `retoc to-zen` computes
 from the **`FolderName` field in the package-summary header** — *not* the file path and *not* the
