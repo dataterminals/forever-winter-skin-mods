@@ -2,18 +2,13 @@
 tools/**/bin/
 tools/**/obj/
 
-# Game / mod binary assets — NOT redistributed here (third-party + game-derived IP).
-# The scripts/tools are ours; the cooked assets are not.
-dist/
+# Working scratch — loose game-derived assets stay out of the repo
 work/
-*.pak
-*.ucas
-*.utoc
-*.sig
 *.uasset
 *.uexp
 *.ubulk
 *.usmap
-*.zip
 scriptobjects.bin
 oodle-data-shared.dll
+
+# NOTE: dist/ (the built mod .pak/.ucas/.utoc + zips) IS tracked for distribution — see README.

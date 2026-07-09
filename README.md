@@ -7,10 +7,10 @@ different, and a modded look no longer disappears when a DLC skin is equipped.
 First target: the **UMP45** (Girls' Frontline) mod for **Shaman**, retargeted onto each of
 Shaman's 4 DLC slots. See [`docs/shaman-skin-map.md`](docs/shaman-skin-map.md).
 
-> **Note on assets.** The cooked `.uasset/.pak/.ucas/.utoc` and the source mod are **not**
-> committed (see `.gitignore`) — they contain third-party (Girls' Frontline) and game-derived
-> content. Only our tooling and docs live here. Redistribute built mods only with the original
-> mod author's permission.
+> **Note on assets.** The built mods (`dist/*.pak/.ucas/.utoc` + zips) are included for
+> distribution. They bundle third-party (Girls' Frontline) and game-derived content — please
+> credit the original mod authors and redistribute per their terms. Raw loose game assets and the
+> source mods stay out of the repo (see `.gitignore`).
 
 ## How it works
 
